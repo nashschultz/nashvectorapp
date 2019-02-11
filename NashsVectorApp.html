@@ -1,0 +1,416 @@
+<html>
+	<head>
+		<title>Nash's Vector App</title>
+	</head>
+	<body style="background-color: rgb(15, 225, 255)">
+
+
+<h1>Nash's Vector App
+	<input type='button' id='dim' value="2D" onclick="goToD(); return false;">
+	<input type='button' id='changeColor' value="Change Color" onclick="changeColor();return false;">
+</h1>
+
+	<span id = 'movedot' class="dot"> </span>
+
+	<style>
+		.dot {
+  		height: 25px;
+  		width: 25px;
+  		background-color: #bbb;
+  		border-radius: 50%;
+ 		display: inline-block;
+	}
+	</style>
+
+
+	X:
+	<input type='number' id='txtXInput' />
+	Y:
+	<input type='number' id='txtYInput' />
+	<z id="zText">Z:</z>
+	<input type='number' id='txtZInput' />
+	<input type='button' id='btnSubmit' value="Submit" onclick="generateVector();return false;">
+	<input type='button' id='clearButton' value="Clear" onclick="clearVectorInfo(); return false;"/>
+
+<h2 id='v1'>Vector Info</h2>
+
+<p id="vLength">Length: </p>
+<p1 id="vUnit">Unit Vector: </p1>
+<p id="dot">Dot Product: </p>
+<p id="cross">Cross Product: </p>
+<p id="add">Vector Sum: </p>
+
+<h3>Equation</h3>
+	<input type='text' id='eqInput1' />
+	<input type='button' id='eqSubmit1' value="Solve" onclick="solveNormal(1);return false;"/>
+
+	<p2 id="vNormal1">Normal Vector: </p2>
+
+	<br>
+
+	<input type='text' id='eqInput2' />
+	<input type='button' id='eqSubmit2' value="Solve" onclick="solveNormal(2);return false;"/>
+
+	<p2 id="vNormal2">Normal Vector: </p2>
+
+	<br>
+
+	<input type='text' id='eqInput3' />
+	<input type='button' id='eqSubmit3' value="Solve" onclick="solveNormal(3);return false;"/>
+
+	<p2 id="vNormal3">Normal Vector: </p2>
+
+	<br>
+
+	<input type='button' id='solveInter' value="Solve Intersection" onclick="solveIntersection(); return false;"/>
+	<br>
+	<p3 id='xEq'></p3>
+
+	<p>How to Cross</p>
+
+	<p id='hey'><font size="20"> [    <font size="5">i j k</font>    ] </font></p>
+
+	<script>
+
+
+	function changeColor() {
+    	var x = Math.floor(Math.random() * 256);
+    	var y = Math.floor(Math.random() * 256);
+    	var z = Math.floor(Math.random() * 256);
+    	var colorBackground = "rgb(" + x + "," + y + "," + z + ")";
+
+  
+    	document.body.style.background = colorBackground;
+    }
+
+
+
+
+
+	var dimension = 3;
+
+	function goToD() {
+		
+		if(dimension == 3) {
+			dimension = 2;
+			document.getElementById("txtZInput").style.display = "none";
+			document.getElementById("zText").innerHTML = "";
+			document.getElementById("dim").value = "3D";
+			document.getElementById("cross").innerHTML = "";
+			clearVectorInfo();
+		} else {
+			dimension = 3;
+			document.getElementById("txtZInput").style.display = "inline";
+			document.getElementById("zText").innerHTML = "Z:";
+			document.getElementById("dim").value = "2D";
+			document.getElementById("cross").innerHTML = "Cross Product: ";
+			clearVectorInfo();
+		}
+		
+
+	}
+
+	
+
+	function Vector(a, b, c) {
+
+		// creates the vector
+		this.x = a;
+		this.y = b;
+		if(dimension == 3) {
+			this.z = c;
+		}
+
+	}
+
+	Vector.prototype = {
+
+		show: function() {
+			if (dimension == 3) {
+				return "<" + this.x + "," + this.y + "," + this.z + ">";
+			} else {
+				return "<" + this.x + "," + this.y + ">";
+			}
+		},
+
+		add: function(v) {
+			return new Vector(this.x + v.x, this.y +v.y, this.z + v.z);
+		},
+
+		subtract: function(v) {
+			return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
+		},
+
+		divide: function(a) {
+			return new Vector(this.x.value / a, this.y.value / a, this.z.value / a);
+		},
+
+		stretch: function(a) {
+			return new Vector(this.x * a, this.y * a, this.z * a);
+		},
+
+		len: function() {
+			if (dimension == 3) {
+				return Math.sqrt((Math.pow(this.x, 2)) + (Math.pow(this.y, 2)) + (Math.pow(this.z, 2)));
+			} else {
+				return Math.sqrt((Math.pow(this.x, 2)) + (Math.pow(this.y, 2)));
+			}
+		},
+
+		dot: function(v) {
+			if (dimension == 3) {
+    			return this.x * v.x + this.y * v.y + this.z * v.z;
+    		} else {
+    			return this.x * v.x + this.y * v.y;
+    		}
+  		},
+
+  		cross: function(v) {
+  			if (dimension == 3) {
+    			return new Vector(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
+    		} else {
+    			return false;
+    		}
+  		},
+
+		unit: function() {
+			//return this.divide(this.length());
+			if(dimension == 3){
+				return new Vector(this.x / this.len(), this.y / this.len(), this.z / this.len());
+			} else {
+				return new Vector(this.x / this.len(), this.y / this.len());
+			}
+			
+		}
+
+
+
+
+	}
+	
+	var numVectors = 0;
+	let firstV = new Vector();
+	function generateVector() {
+		numVectors++;
+		
+		//Vanilla JavaScript
+		
+		var txtXInput = document.getElementById("txtXInput");
+		var txtYInput = document.getElementById("txtYInput");
+		var txtZInput = document.getElementById("txtZInput");
+		var txtXInputValue = parseInt(txtXInput.value);
+		var txtYInputValue = parseInt(txtYInput.value);
+		var txtZInputValue = parseInt(txtZInput.value);
+
+		if (isNaN(txtXInputValue) == false && isNaN(txtYInputValue) == false) {
+			if (isNaN(txtZInputValue) == false || dimension == 2) {
+
+				let v = new Vector(txtXInputValue, txtYInputValue, txtZInputValue);
+				if (numVectors == 1) {
+					firstV = v;
+				}
+				let w = new Vector(2, 2, 2);
+				//w = w.unit();
+				document.getElementById("vLength").innerHTML = "Length: " + v.len();
+
+				var unit = v.unit();
+				if (dimension == 3) {
+					var output = "<" + unit.x + "," + unit.y + "," + unit.z + ">";
+				} else {
+					var output = "<" + unit.x + "," + unit.y + ">";
+				}
+
+				document.getElementById("vUnit").innerHTML = "Unit Vector: " + output;
+				document.getElementById("v1").innerHTML = document.getElementById("v1").innerHTML + " " + v.show();
+
+
+
+				if (numVectors == 2) {
+
+					var dotProduct = v.dot(firstV);
+					var vectorSum = v.add(firstV);
+					document.getElementById("add").innerHTML = "Vector Sum: " + vectorSum.show();
+					document.getElementById("dot").innerHTML = "Dot Product: " + dotProduct;
+					if (dimension == 3) {
+						var crossProduct = v.cross(firstV);
+						document.getElementById("cross").innerHTML = "Cross Product: " + crossProduct.show();
+					}
+				}
+			} else {
+				alert("You have not entered enough information");
+			}
+		} else {
+			alert("You have not entered enough information");
+		}
+
+		//JQUERY
+		//var txtInput = $("#txtInput").val();
+	
+
+		
+
+	}
+
+
+
+	function clearVectorInfo() {
+
+		document.getElementById("v1").innerHTML = "Vector Info";
+		document.getElementById("vLength").innerHTML = "Length: ";
+		document.getElementById("vUnit").innerHTML = "Unit Vector: ";
+		document.getElementById("dot").innerHTML = "Dot Product: ";
+		if (dimension == 3) {
+			document.getElementById("cross").innerHTML = "Cross Product: ";
+		}
+		numVectors = 0; 
+
+	}
+	
+	function solveNormal(a) {
+
+		var equation = document.getElementById("eqInput" + a).value;
+		var splitVals = equation.split('+');
+		
+		var dimEq = 0;
+		var xVal = splitVals[0];
+		var yVal = splitVals[1];
+		if (splitVals[2]) { //checks to see if there is a third value 
+			var zVal = splitVals[2];
+			dimEq=1;
+			var zNum = parseInt(zVal);
+		} else if (splitVals.length == 1) {
+			dimEq = 2;
+		}
+
+		var xNum = parseInt(xVal);
+		var yNum = parseInt(yVal);
+		
+
+		if (dimEq == 1) {
+
+			let normalVector = new Vector(xNum, yNum, zNum);
+			document.getElementById("vNormal" + a).innerHTML = "Normal Vector: " + normalVector.show();
+			return splitVals;
+
+		} else if (dimEq == 2) {
+
+			document.getElementById("vNormal" + a).innerHTML = "Normal Vector: Not enough informaton";
+
+		} else {
+
+			//document.getElementById("vNormal" + a).innerHTML = "Normal Vector: <" + -xNum + "," + yNum + ">"; 
+			return splitVals;
+
+		}
+
+
+	}
+
+	function solveIntersection() {
+
+		var eq1Vals = solveNormal(1);
+		var eq2Vals = solveNormal(2);
+
+		var answer1 = document.getElementById("eqInput1").value.split('=');
+		answer1 = parseInt(answer1[answer1.length - 1]);
+
+		var answer2 = document.getElementById("eqInput2").value.split('=');
+		answer2 = parseInt(answer2[answer2.length - 1]);
+
+		solveEquation();
+
+
+
+
+
+
+	}
+
+	function getDeterminant(a, b, c) {
+
+
+		return ((a[0] * b[1] * c[2]) + (b[0] + c[1] + a[2]) + (c[0] + a[1] + b[2])) - (a[2] * b[1] * c[0]) - (b[2] * c[1] * a[0]) - (c[2] * a[1] * b[0]);
+
+
+	}
+
+	function solveEquation() {
+
+		var eq1Start = document.getElementById("eqInput1").value.split('+'); //grabs the values
+		var eq2Start = document.getElementById("eqInput2").value.split('+'); 
+		var eq3Start = document.getElementById("eqInput3").value.split('+');
+
+		var answer1 = document.getElementById("eqInput1").value.split('='); 
+		answer1 = parseInt(answer1[answer1.length - 1]);
+
+		var answer2 = document.getElementById("eqInput2").value.split('=');
+		answer2 = parseInt(answer2[answer2.length - 1]);
+
+		var answer3 = document.getElementById("eqInput3").value.split('=');
+		answer3 = parseInt(answer3[answer3.length - 1]);
+
+		
+		var sum10 = parseInt(eq1Start[0]); // registers as integers
+		var sum11 = parseInt(eq1Start[1]);
+		var sum12 = parseInt(eq1Start[2]);
+
+		var sum20 = parseInt(eq2Start[0]);
+		var sum21 = parseInt(eq2Start[1]);
+		var sum22 = parseInt(eq2Start[2]);
+
+		var sum30 = parseInt(eq3Start[0]);
+		var sum31 = parseInt(eq3Start[1]);
+		var sum32 = parseInt(eq3Start[2]);
+
+		if (eq1Start.length == 2) {
+			var det = (sum10 * sum21) - (sum20 * sum11);
+			var detx = (answer1 * sum21) - (answer2 * sum11);
+			var dety = (sum10 * answer2) - (sum20 * answer1);
+			document.getElementById("xEq").innerHTML = ("x=" + detx/det + "y=" + dety/det);
+		} else if (eq1Start.length == 3) {
+
+			var array1 = [sum10, sum20, sum30];
+			var array2 = [sum11, sum21, sum31];
+			var array3 = [sum12, sum22, sum32];
+			var arrayA = [answer1, answer2, answer3];
+
+			var det = getDeterminant(array1, array2, array3);
+			var detx = getDeterminant(arrayA, array2, array3);
+			var dety = getDeterminant(array1, arrayA, array3);
+			var detz = getDeterminant(array1, array2, arrayA);
+
+			var xSolved = detx / det;
+			var ySolved = dety / det;
+			var zSolved = detz / det;
+
+			alert("x=" + xSolved + "y=" + ySolved + "z=" + zSolved);
+
+		}
+
+
+		var sum0 = sum10 + sum20;
+		var sum1 = sum11 + sum21; //finds all the sums of variables 
+		var sum2 = sum12 + sum22; 
+		var answer = answer1 + answer2;
+
+
+		/* if (isNaN(sum0) == false) { //checks for numbers
+			if (isNaN(sum1) == false) {
+				if (isNaN(sum2) == false) {
+					document.getElementById("xEq").innerHTML = ("x=" + sum1/sum0 + "y + " + sum2/sum0 + "z + " + answer/sum0);
+				}
+			}	
+		} */
+
+
+	}
+
+
+
+
+	</script>
+
+
+
+	</body>
+  </html>
