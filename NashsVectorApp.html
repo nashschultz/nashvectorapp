@@ -66,9 +66,7 @@
 	<br>
 	<p3 id='xEq'></p3>
 
-	<p>How to Cross</p>
 
-	<p id='hey'><font size="20"> [    <font size="5">i j k</font>    ] </font></p>
 
 	<script>
 
@@ -259,6 +257,7 @@
 		document.getElementById("vLength").innerHTML = "Length: ";
 		document.getElementById("vUnit").innerHTML = "Unit Vector: ";
 		document.getElementById("dot").innerHTML = "Dot Product: ";
+		document.getElementById("add").innerHTML = "Vector Sum: ";
 		if (dimension == 3) {
 			document.getElementById("cross").innerHTML = "Cross Product: ";
 		}
@@ -310,17 +309,10 @@
 
 		var eq1Vals = solveNormal(1);
 		var eq2Vals = solveNormal(2);
+		var eq3Vals = solveNormal(3);
 
-		var answer1 = document.getElementById("eqInput1").value.split('=');
-		answer1 = parseInt(answer1[answer1.length - 1]);
-
-		var answer2 = document.getElementById("eqInput2").value.split('=');
-		answer2 = parseInt(answer2[answer2.length - 1]);
 
 		solveEquation();
-
-
-
 
 
 
@@ -329,7 +321,14 @@
 	function getDeterminant(a, b, c) {
 
 
-		return ((a[0] * b[1] * c[2]) + (b[0] + c[1] + a[2]) + (c[0] + a[1] + b[2])) - (a[2] * b[1] * c[0]) - (b[2] * c[1] * a[0]) - (c[2] * a[1] * b[0]);
+
+		var arr = [ [ a[0], b[0], c[0] ], [ a[1], b[1], c[1] ], [ a[2], b[2], c[2] ] ];
+
+ 		var determinant = arr[0][0] * (arr[1][1]*arr[2][2] - arr[1][2]*arr[2][1]) -
+                  arr[0][1] * (arr[1][0]*arr[2][2] - arr[1][2]*arr[2][0]) +
+                  arr[0][2] * (arr[1][0]*arr[2][1] - arr[1][1]*arr[2][0]);
+
+        return determinant;
 
 
 	}
@@ -363,10 +362,12 @@
 		var sum32 = parseInt(eq3Start[2]);
 
 		if (eq1Start.length == 2) {
+
 			var det = (sum10 * sum21) - (sum20 * sum11);
 			var detx = (answer1 * sum21) - (answer2 * sum11);
 			var dety = (sum10 * answer2) - (sum20 * answer1);
 			document.getElementById("xEq").innerHTML = ("x=" + detx/det + "y=" + dety/det);
+
 		} else if (eq1Start.length == 3) {
 
 			var array1 = [sum10, sum20, sum30];
@@ -383,7 +384,7 @@
 			var ySolved = dety / det;
 			var zSolved = detz / det;
 
-			alert("x=" + xSolved + "y=" + ySolved + "z=" + zSolved);
+			alert("x= " + xSolved + " y= " + ySolved + " z= " + zSolved);
 
 		}
 
