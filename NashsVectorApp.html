@@ -62,11 +62,27 @@
 
 	<br>
 
-	<input type='button' id='solveInter' value="Solve Intersection" onclick="solveIntersection(); return false;"/>
+	<input type='button' id='solveInter' value="Solve Variables" onclick="solveVariables(); return false;"/>
 	<br>
 	<p3 id='xEq'></p3>
 
+	<h4>Solve Intersections</h4>
 
+	<br>
+
+	<input type='number' id='intInput11' />X + <input type='number' id='intInput12' />Y +  <input type='number' id='intInput13' />Z = <input type='number' id='intInput1A' />
+
+	<br> <br>
+
+	<input type='number' id='intInput21' />X + <input type='number' id='intInput22' />Y + <input type='number' id='intInput23' />Z = <input type='number' id='intInput2A' />
+
+	<br>
+
+	<input type='button' id='intSubmit' value='Solve Intersection' onclick="solveIntersection(); return false;" />
+
+	<br>
+
+	<p id='intAnswer'></p>
 
 	<script>
 
@@ -76,7 +92,6 @@
     	var y = Math.floor(Math.random() * 256);
     	var z = Math.floor(Math.random() * 256);
     	var colorBackground = "rgb(" + x + "," + y + "," + z + ")";
-
   
     	document.body.style.background = colorBackground;
     }
@@ -305,7 +320,7 @@
 
 	}
 
-	function solveIntersection() {
+	function solveVariables() {
 
 		var eq1Vals = solveNormal(1);
 		var eq2Vals = solveNormal(2);
@@ -332,6 +347,56 @@
 
 
 	}
+
+	function solveIntersection() {
+
+		/*var eq1Start = document.getElementById("intInput1").value.split('+');
+		var eq2Start = document.getElementById("intInput2").value.split('+');
+
+		var answer1 = document.getElementById("intInput1").value.split('=');
+		answer1 = parseInt(answer1[answer1.length - 1]);
+
+		var answer2 = document.getElementById("intInput2").value.split('=');
+		answer2 = parseInt(answer2[answer2.length - 1]);
+
+		var sum10 = parseInt(eq1Start[0]);// registers as integers
+		var sum11 = parseInt(eq1Start[1]);
+		var sum12 = parseInt(eq1Start[2]);
+
+		var sum20 = parseInt(eq2Start[0]);
+		var sum21 = parseInt(eq2Start[1]);
+		var sum22 = parseInt(eq2Start[2]); */
+
+		var sum10 = document.getElementById("intInput11").value;
+		var sum11 = document.getElementById("intInput12").value;
+		var sum12 = document.getElementById("intInput13").value;
+		var answer1 = document.getElementById("intInput1A").value;
+
+		var sum20 = document.getElementById("intInput21").value;
+		var sum21 = document.getElementById("intInput22").value;
+		var sum22 = document.getElementById("intInput23").value;
+		var answer2 = document.getElementById("intInput2A").value;
+
+		var dimHold = dimension;
+		dimension = 3;
+		let plane1 = new Vector(sum10, sum11, sum12);
+		let plane2 = new Vector(sum20, sum21, sum22);
+
+		let planeCross = new Vector;
+		planeCross = plane1.cross(plane2);
+
+		var det = (sum10 * sum21) - (sum20 * sum11);
+		var detx = (answer1 * sum21) - (answer2 * sum11);
+		var dety = (sum10 * answer2) - (sum20 * answer1);
+		var x = detx/det;
+		var y = dety/det;
+		var z = 0;
+
+		document.getElementById("intAnswer").innerHTML = ("(" + x + "," + y + "," + z + ") + t" + planeCross.show());
+		dimension = dimHold;
+
+	}
+
 
 	function solveEquation() {
 
@@ -384,7 +449,7 @@
 			var ySolved = dety / det;
 			var zSolved = detz / det;
 
-			alert("x= " + xSolved + " y= " + ySolved + " z= " + zSolved);
+			document.getElementById("xEq").innerHTML = ("x= " + xSolved + " y= " + ySolved + " z= " + zSolved);
 
 		}
 
